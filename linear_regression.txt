@@ -1,0 +1,85 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+#training data
+x_train = np.array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15])
+y_train = np.array([30,35,40,45,50,55,60,65,70,75,80,85,90,95,100])
+
+#plt.scatter(x_train,y_train, marker='x',c='b')
+#plt.title("experience vs salary")
+#plt.xlabel('experience in year')
+#plt.ylabel('salary in thousand')
+#plt.show
+
+
+#compute cost function
+def compute_cost(x,y,w,b):
+    m= x.shape[0]
+    cost=0
+    for i in range(m):
+        f_wb= w*x[i]+b
+        cost= cost + (f_wb-y[i])**2
+    total_cost = cost/2*m
+    return(total_cost)
+
+# compute gradient
+def compute_gradient(x,y,w,b):
+    m= x.shape[0]
+    dj_dw=0
+    dj_db=0
+    for i in range(m):
+        f_wb= w*x[i]+b
+        dj_dw = dj_dw+ (f_wb-y[i])*x[i]
+        dj_db = dj_db + (f_wb-y[i])
+    dj_dw = dj_dw/m
+    dj_db = dj_db/m
+    return (dj_dw, dj_db)
+
+
+def gradient_descent(x, y, w_in, b_in, cost_function, gradient_function, alpha, num_iters): 
+    m = x.shape[0]
+    
+    # An array to store cost J and w's at each iteration — primarily for graphing later
+    J_history = []
+    w_history = []
+    w = w_in  
+    b = b_in
+    
+    for i in range(num_iters):
+
+        # Calculate the gradient and update the parameters
+        dj_dw, dj_db = gradient_function(x, y, w, b )  
+
+        # Update Parameters using w, b, alpha and gradient
+        w = w - alpha * dj_dw               
+        b = b - alpha * dj_db               
+        cost =  cost_function(x, y, w, b)
+        J_history.append(cost)
+        w_history.append(w)
+
+        
+    return w, b, J_history, w_history 
+
+initial_w = 100
+initial_b = 20
+
+# some gradient descent settings
+iterations = 1500
+alpha = 0.01
+
+w,b,J_history,w_history = gradient_descent(x_train ,y_train, initial_w, initial_b, 
+                     compute_cost, compute_gradient, alpha, iterations)
+print("w,b,J_history,w_history found by gradient descent:",w,b)
+plt.scatter(w_history,J_history,c='b')
+plt.xlim(0,130)
+plt.ylim(0,17000)
+plt.show()
+
+m = x_train.shape[0]
+predicted = np.zeros(m)
+
+for i in range(m):
+    predicted[i] = w * x_train[i] + b
+    
+# Plot the linear fit
+#plt.plot(x_train, predicted, c = "r")  
